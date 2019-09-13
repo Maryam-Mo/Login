@@ -26,6 +26,7 @@ public class MainActivity extends AppCompatActivity {
             getSupportActionBar().setDisplayShowHomeEnabled(true);
         }
         onUserButtonClicked();
+
         onItemButtonClicked();
     }
 
