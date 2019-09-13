@@ -10,6 +10,7 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.example.maryam.log_in.dto.Item;
+import com.example.maryam.log_in.resource.RetrofitGenerator;
 
 import java.util.List;
 
@@ -24,6 +25,14 @@ public class ViewItemsActivity extends AppCompatActivity {
     private Item item;
     public static Item selectedItem;
     private List<Item> items;
+    private RetrofitGenerator retrofitGenerator;
+
+    public RetrofitGenerator getRetrofitGenerator() {
+        if (retrofitGenerator == null){
+            retrofitGenerator = new RetrofitGenerator();
+        }
+        return retrofitGenerator;
+    }
 
     @SuppressLint("RestrictedApi")
     @Override
@@ -42,7 +51,7 @@ public class ViewItemsActivity extends AppCompatActivity {
         super.onResume();
         if (ItemProfileActivity.onEdit){
             for (Item item: items){
-                if (selectedItem.getName().equalsIgnoreCase(item.getName())){
+                if (selectedItem.getName().equalsIgnoreCase(item.getName()) && ItemProfileActivity.updatedItem != null){
                     int index = items.indexOf(item);
                     items.set(index, ItemProfileActivity.updatedItem);
                 }
@@ -57,11 +66,7 @@ public class ViewItemsActivity extends AppCompatActivity {
 
     private void loadListWithData() {
         itemList = findViewById(R.id.itemList);
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("http://172.16.1.27:8070/api/item/")
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-        final ItemApi itemApi = retrofit.create(ItemApi.class);
+        final ItemApi itemApi = getRetrofitGenerator().generateRetrofit().create(ItemApi.class);
         Call<List<Item>> itemsCall = itemApi.findAllItems();
         itemsCall.enqueue(new Callback<List<Item>>() {
             @Override

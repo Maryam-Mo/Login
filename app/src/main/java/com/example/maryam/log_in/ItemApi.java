@@ -12,15 +12,14 @@ import retrofit2.http.POST;
 /**
  * Created by maryam on 9/9/19.
  */
-
 public interface ItemApi {
 
-    @POST("create")
+    @POST("item/create")
     Call<Item> createItem(@Body Item item);
 
-    @POST("update")
+    @POST("item/update")
     Call<Item> updateItem(@Body Item item);
 
-    @GET("findAll")
+    @GET("item/findAll")
     Call<List<Item>> findAllItems();
 }

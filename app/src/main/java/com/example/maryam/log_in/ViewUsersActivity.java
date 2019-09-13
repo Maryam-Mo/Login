@@ -11,6 +11,7 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.example.maryam.log_in.dto.User;
+import com.example.maryam.log_in.resource.RetrofitGenerator;
 
 import java.util.List;
 
@@ -23,6 +24,14 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class ViewUsersActivity extends AppCompatActivity {
     private ListView userList;
     private User user;
+    private RetrofitGenerator retrofitGenerator;
+
+    public RetrofitGenerator getRetrofitGenerator() {
+        if (retrofitGenerator == null){
+            retrofitGenerator = new RetrofitGenerator();
+        }
+        return retrofitGenerator;
+    }
 
     @SuppressLint("RestrictedApi")
     @Override
@@ -38,11 +47,7 @@ public class ViewUsersActivity extends AppCompatActivity {
         if (intent.hasExtra("object")) {
             user = intent.getParcelableExtra("object");
         }
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("http://172.16.1.27:8070/api/user/")
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-        UserApi userApi = retrofit.create(UserApi.class);
+        UserApi userApi = getRetrofitGenerator().generateRetrofit().create(UserApi.class);
         Call<List<User>> userscall = userApi.findAllUsers();
         userscall.enqueue(new Callback<List<User>>() {
             @Override

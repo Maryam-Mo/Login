@@ -17,18 +17,18 @@ import retrofit2.http.Query;
 
 public interface UserApi {
 
-    @GET("validate")
+    @GET("user/validate")
     Call<User> validateUser(@Query("username") String username, @Query("password") String password);
 
-    @POST("create")
+    @POST("user/create")
     Call<User> createUser(@Body User user);
 
-    @POST("update")
+    @POST("user/update")
     Call<User> updateUser(@Body User user);
 
-    @GET("findAll")
+    @GET("user/findAll")
     Call<List<User>> findAllUsers();
 
-    @DELETE("delete")
+    @DELETE("user/delete")
     Call<Void> delete(@Query("id") String id);
 }

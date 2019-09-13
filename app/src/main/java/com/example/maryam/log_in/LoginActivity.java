@@ -11,6 +11,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.maryam.log_in.dto.User;
+import com.example.maryam.log_in.resource.RetrofitGenerator;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -24,6 +25,14 @@ public class LoginActivity extends AppCompatActivity {
     private EditText username;
     private EditText password;
     private TextView result;
+    private RetrofitGenerator retrofitGenerator;
+
+    public RetrofitGenerator getRetrofitGenerator() {
+        if (retrofitGenerator == null){
+            retrofitGenerator = new RetrofitGenerator();
+        }
+        return retrofitGenerator;
+    }
 
     @SuppressLint("RestrictedApi")
     @Override
@@ -64,11 +73,7 @@ public class LoginActivity extends AppCompatActivity {
                         password.setError("Password is required!");
                     }
                 } else {
-                    Retrofit retrofit = new Retrofit.Builder()
-                            .baseUrl("http://172.16.1.27:8070/api/user/")
-                            .addConverterFactory(GsonConverterFactory.create())
-                            .build();
-                    UserApi userApi = retrofit.create(UserApi.class);
+                    UserApi userApi = getRetrofitGenerator().generateRetrofit().create(UserApi.class);
                     Call<User> call = userApi.validateUser(username.getText().toString(), password.getText().toString());
                     call.enqueue(new Callback<User>() {
                         @Override

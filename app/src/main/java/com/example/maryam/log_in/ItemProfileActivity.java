@@ -11,6 +11,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.example.maryam.log_in.dto.Item;
+import com.example.maryam.log_in.resource.RetrofitGenerator;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -26,6 +27,14 @@ public class ItemProfileActivity extends AppCompatActivity {
     public static boolean onEdit;
     private Item item;
     public static Item updatedItem;
+    private RetrofitGenerator retrofitGenerator;
+
+    public RetrofitGenerator getRetrofitGenerator() {
+        if (retrofitGenerator == null){
+            retrofitGenerator = new RetrofitGenerator();
+        }
+        return retrofitGenerator;
+    }
 
     @SuppressLint("RestrictedApi")
     @Override
@@ -81,11 +90,7 @@ public class ItemProfileActivity extends AppCompatActivity {
                     itemToSave.setName(name.getText().toString());
                     itemToSave.setPrice(Double.parseDouble(price.getText().toString()));
                     itemToSave.setQuantity(Integer.parseInt(quantity.getText().toString()));
-                    Retrofit retrofit = new Retrofit.Builder()
-                            .baseUrl("http://172.16.1.27:8070/api/item/")
-                            .addConverterFactory(GsonConverterFactory.create())
-                            .build();
-                    ItemApi itemApi = retrofit.create(ItemApi.class);
+                    final ItemApi itemApi = getRetrofitGenerator().generateRetrofit().create(ItemApi.class);
                     if (!onEdit) {
                         Call<Item> createCall = itemApi.createItem(itemToSave);
                         createCall.enqueue(new Callback<Item>() {
