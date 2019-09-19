@@ -10,11 +10,13 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.example.maryam.log_in.dto.LoginUser;
 import com.example.maryam.log_in.dto.User;
 import com.example.maryam.log_in.resource.RetrofitGenerator;
 
 import java.util.List;
 
+import io.realm.Realm;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -23,7 +25,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class ViewUsersActivity extends AppCompatActivity {
     private ListView userList;
-    private User user;
+    private LoginUser loginUser;
     private RetrofitGenerator retrofitGenerator;
 
     public RetrofitGenerator getRetrofitGenerator() {
@@ -43,10 +45,8 @@ public class ViewUsersActivity extends AppCompatActivity {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setDisplayShowHomeEnabled(true);
         }
-        Intent intent = getIntent();
-        if (intent.hasExtra("object")) {
-            user = intent.getParcelableExtra("object");
-        }
+        Realm realm = Realm.getDefaultInstance();
+        loginUser = realm.where(LoginUser.class).findFirst();
         UserApi userApi = getRetrofitGenerator().generateRetrofit().create(UserApi.class);
         Call<List<User>> userscall = userApi.findAllUsers();
         userscall.enqueue(new Callback<List<User>>() {
@@ -64,10 +64,10 @@ public class ViewUsersActivity extends AppCompatActivity {
                         @Override
                         public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
                         User selectedUser = users.get(position);
-                        if (user.getUsername().equalsIgnoreCase("admin") || selectedUser.getUsername().equalsIgnoreCase(user.getUsername())) {
+                        if (loginUser.getUsername().equalsIgnoreCase("admin") || selectedUser.getUsername().equalsIgnoreCase(loginUser.getUsername())) {
                             Intent intent = new Intent(ViewUsersActivity.this, ProfileActivity.class)
                                     .putExtra("object", selectedUser);
-                            startActivityForResult(intent, RESULT_OK);
+                            startActivity(intent);
                         } else {
                             Toast.makeText(ViewUsersActivity.this, "Access Denied!", Toast.LENGTH_LONG).show();
                         }
@@ -82,35 +82,9 @@ public class ViewUsersActivity extends AppCompatActivity {
         });
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == RESULT_OK && resultCode == RESULT_OK) {
-            user = data.getParcelableExtra("object");
-        }
-    }
 
     @Override
-    public void onBackPressed() {
-        if (user != null) {
-            Intent intent = new Intent();
-            intent.putExtra("object", user);
-            setResult(RESULT_OK, intent);
-        }
-        super.onBackPressed();
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (user != null) {
-            switch (item.getItemId()) {
-                case android.R.id.home:
-                    onBackPressed();
-                    return true;
-                default:
-                    return super.onOptionsItemSelected(item);
-            }
-        }
-        return true;
+    protected void onDestroy() {
+        super.onDestroy();
     }
 }

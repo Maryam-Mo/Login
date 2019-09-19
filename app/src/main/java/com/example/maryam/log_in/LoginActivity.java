@@ -2,6 +2,7 @@ package com.example.maryam.log_in;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.os.PersistableBundle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -10,9 +11,12 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.maryam.log_in.dto.LoginUser;
 import com.example.maryam.log_in.dto.User;
 import com.example.maryam.log_in.resource.RetrofitGenerator;
 
+import io.realm.Realm;
+import io.realm.RealmConfiguration;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -39,6 +43,7 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+        Realm.init(this);
         onLoginButtonClicked();
         onSignUpButtonClicked();
         getSupportActionBar().setDefaultDisplayHomeAsUpEnabled(true);
@@ -83,10 +88,29 @@ public class LoginActivity extends AppCompatActivity {
                                 return;
                             }
                             User user = response.body();
+                            LoginUser loginUser = new LoginUser();
+                            loginUser.setUsername(user.getUsername());
+                            Realm realm;
+                            try{
+                                realm = Realm.getDefaultInstance();
+
+                            }catch (Exception e){
+
+                                RealmConfiguration config = new RealmConfiguration.Builder()
+                                        .deleteRealmIfMigrationNeeded()
+                                        .build();
+                                realm = Realm.getInstance(config);
+
+                            }
+                            realm.beginTransaction();
+                            realm.deleteAll();
+                            realm.copyToRealmOrUpdate(loginUser);
+                            realm.commitTransaction();
+                            realm.close();
                             username.setText("");
                             password.setText("");
                             Toast.makeText(LoginActivity.this, user.getUsername() + " logged in successfully!", Toast.LENGTH_SHORT).show();
-                            Intent intent = new Intent(LoginActivity.this, MainActivity.class).putExtra("object", user);
+                            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                             startActivity(intent);
                         }
 

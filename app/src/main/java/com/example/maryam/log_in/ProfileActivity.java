@@ -11,6 +11,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.maryam.log_in.dto.LoginUser;
 import com.example.maryam.log_in.dto.User;
 import com.example.maryam.log_in.resource.RetrofitGenerator;
 
@@ -28,7 +29,7 @@ public class ProfileActivity extends AppCompatActivity {
     private EditText lastName;
     private boolean onEdit;
     private TextView result;
-    private User user;
+    private User selectedUser;
     private Button delete;
     private RetrofitGenerator retrofitGenerator;
 
@@ -50,11 +51,11 @@ public class ProfileActivity extends AppCompatActivity {
         lastName = findViewById(R.id.lastNameTxt);
         Intent intent = getIntent();
         if (intent.hasExtra("object")){
-            user = intent.getParcelableExtra("object");
-            username.setText(user.getUsername());
-            password.setText(user.getPassword());
-            firstName.setText(user.getFirstName());
-            lastName.setText(user.getLastName());
+            selectedUser = intent.getParcelableExtra("object");
+            username.setText(selectedUser.getUsername());
+            password.setText(selectedUser.getPassword());
+            firstName.setText(selectedUser.getFirstName());
+            lastName.setText(selectedUser.getLastName());
             onDeleteButtonClicked();
             onEdit = true;
         } else if (intent.hasExtra("string")) {
@@ -68,33 +69,6 @@ public class ProfileActivity extends AppCompatActivity {
             getSupportActionBar().setDisplayShowHomeEnabled(true);
         }
         onSaveButtonClicked();
-    }
-
-    @Override
-    public void onBackPressed() {
-        if (user != null) {
-            Intent intent = new Intent();
-            intent.putExtra("object", user);
-            setResult(RESULT_OK, intent);
-        }
-        super.onBackPressed();
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (user != null) {
-            switch (item.getItemId()) {
-                case android.R.id.home:
-                    onBackPressed();
-                    return true;
-                default:
-                    return super.onOptionsItemSelected(item);
-            }
-        } else {
-            Intent intent = new Intent(ProfileActivity.this, LoginActivity.class);
-            startActivity(intent);
-            return false;
-        }
     }
 
     public void onSaveButtonClicked() {
@@ -147,7 +121,7 @@ public class ProfileActivity extends AppCompatActivity {
                             }
                         });
                     } else {
-                        userToSave.setId(user.getId());
+                        userToSave.setId(selectedUser.getId());
                         Call<User> updateCall = userApi.updateUser(userToSave);
                         updateCall.enqueue(new Callback<User>() {
                             @Override
@@ -186,14 +160,14 @@ public class ProfileActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 UserApi userApi = getRetrofitGenerator().generateRetrofit().create(UserApi.class);
-            Call<Void> call = userApi.delete(user.getId().toString());
+            Call<Void> call = userApi.delete(selectedUser.getId().toString());
             call.enqueue(new Callback<Void>() {
                 @Override
                 public void onResponse(Call<Void> call, Response<Void> response) {
                     if (!response.isSuccessful()) {
                         return;
                     }
-                    Toast.makeText(ProfileActivity.this, user.getUsername() + " has been deleted! Please log-in with another user!", Toast.LENGTH_LONG).show();
+                    Toast.makeText(ProfileActivity.this, selectedUser.getUsername() + " has been deleted! Please log-in with another user!", Toast.LENGTH_LONG).show();
                     Intent intent = new Intent(ProfileActivity.this, LoginActivity.class);
                     startActivity(intent);
                 }
