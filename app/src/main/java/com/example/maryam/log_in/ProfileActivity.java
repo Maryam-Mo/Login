@@ -119,12 +119,21 @@ public class ProfileActivity extends AppCompatActivity {
                                     result.setText(response.message());
                                     return;
                                 }
-                                User receivedUser = response.body();
-                                Realm realm = getRealmInstanceGenerator().generateRealmInstance();
-                                realm.beginTransaction();
-                                realm.copyToRealmOrUpdate(receivedUser);
-                                realm.commitTransaction();
-                                realm.close();
+                                final User receivedUser = response.body();
+                                Realm realm = null;
+                                try {
+                                    realm = getRealmInstanceGenerator().generateRealmInstance();
+                                    realm.executeTransaction(new Realm.Transaction() {
+                                        @Override
+                                        public void execute(Realm realm) {
+                                            realm.insertOrUpdate(receivedUser);
+                                        }
+                                    });
+                                } finally {
+                                    if(realm != null) {
+                                        realm.close();
+                                    }
+                                }
                                 Toast.makeText(ProfileActivity.this, "New user is created successfully!", Toast.LENGTH_SHORT).show();
                                 clearFields();
                             }
@@ -144,12 +153,21 @@ public class ProfileActivity extends AppCompatActivity {
                                     result.setText(response.message());
                                     return;
                                 }
-                                User receivedUser = response.body();
-                                Realm realm = getRealmInstanceGenerator().generateRealmInstance();
-                                realm.beginTransaction();
-                                realm.copyToRealmOrUpdate(receivedUser);
-                                realm.commitTransaction();
-                                realm.close();
+                                final User receivedUser = response.body();
+                                Realm realm = null;
+                                try {
+                                    realm = getRealmInstanceGenerator().generateRealmInstance();
+                                    realm.executeTransaction(new Realm.Transaction() {
+                                        @Override
+                                        public void execute(Realm realm) {
+                                            realm.insertOrUpdate(receivedUser);
+                                        }
+                                    });
+                                } finally {
+                                    if(realm != null) {
+                                        realm.close();
+                                    }
+                                }
                                 Toast.makeText(ProfileActivity.this, "User is updated successfully!", Toast.LENGTH_SHORT).show();
                                 clearFields();
                             }

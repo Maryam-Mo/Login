@@ -66,11 +66,20 @@ public class ViewUsersActivity extends AppCompatActivity {
                         return;
                     }
                     final List<User> userList = response.body();
-                    Realm realm = getRealmInstanceGenerator().generateRealmInstance();
-                    realm.beginTransaction();
-                    realm.copyToRealmOrUpdate(userList);
-                    realm.commitTransaction();
-                    realm.close();
+                    Realm realm = null;
+                    try {
+                        realm = getRealmInstanceGenerator().generateRealmInstance();
+                        realm.executeTransaction(new Realm.Transaction() {
+                            @Override
+                            public void execute(Realm realm) {
+                                realm.insertOrUpdate(userList);
+                            }
+                        });
+                    } finally {
+                        if(realm != null) {
+                            realm.close();
+                        }
+                    }
                     initializingUserList(getUsersFromRealm());
                 }
 

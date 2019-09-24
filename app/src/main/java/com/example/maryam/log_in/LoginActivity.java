@@ -94,14 +94,22 @@ public class LoginActivity extends AppCompatActivity {
                                 return;
                             }
                             User user = response.body();
-                            LoginUser loginUser = new LoginUser();
+                            final LoginUser loginUser = new LoginUser();
                             loginUser.setUsername(user.getUsername());
-                            Realm realm = getRealmInstanceGenerator().generateRealmInstance();
-                            realm.beginTransaction();
-                            realm.deleteAll();
-                            realm.copyToRealmOrUpdate(loginUser);
-                            realm.commitTransaction();
-                            realm.close();
+                            Realm realm = null;
+                            try {
+                                realm = getRealmInstanceGenerator().generateRealmInstance();
+                                realm.executeTransaction(new Realm.Transaction() {
+                                    @Override
+                                    public void execute(Realm realm) {
+                                        realm.insertOrUpdate(loginUser);
+                                    }
+                                });
+                            } finally {
+                                if(realm != null) {
+                                    realm.close();
+                                }
+                            }
                             username.setText("");
                             password.setText("");
                             Toast.makeText(LoginActivity.this, user.getUsername() + " logged in successfully!", Toast.LENGTH_SHORT).show();
