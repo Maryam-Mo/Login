@@ -10,15 +10,16 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.example.maryam.log_in.dto.Item;
+import com.example.maryam.log_in.dto.User;
+import com.example.maryam.log_in.resource.RealmInstanceGenerator;
 import com.example.maryam.log_in.resource.RetrofitGenerator;
 
 import java.util.List;
 
+import io.realm.Realm;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 public class ViewItemsActivity extends AppCompatActivity {
     private ListView itemList;
@@ -26,6 +27,14 @@ public class ViewItemsActivity extends AppCompatActivity {
     public static Item selectedItem;
     private List<Item> items;
     private RetrofitGenerator retrofitGenerator;
+    private RealmInstanceGenerator realmInstanceGenerator;
+
+    public RealmInstanceGenerator getRealmInstanceGenerator() {
+        if (realmInstanceGenerator == null){
+            realmInstanceGenerator = new RealmInstanceGenerator();
+        }
+        return realmInstanceGenerator;
+    }
 
     public RetrofitGenerator getRetrofitGenerator() {
         if (retrofitGenerator == null){
@@ -66,33 +75,52 @@ public class ViewItemsActivity extends AppCompatActivity {
 
     private void loadListWithData() {
         itemList = findViewById(R.id.itemList);
-        final ItemApi itemApi = getRetrofitGenerator().generateRetrofit().create(ItemApi.class);
-        Call<List<Item>> itemsCall = itemApi.findAllItems();
-        itemsCall.enqueue(new Callback<List<Item>>() {
-            @Override
-            public void onResponse(Call<List<Item>> call, Response<List<Item>> response) {
-                if (!response.isSuccessful()){
-                    Toast.makeText(ViewItemsActivity.this, "Code: " + response.code(), Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                items = response.body();
-                CustomItemListAdapter customItemListAdapter = new CustomItemListAdapter(ViewItemsActivity.this, items);
-                itemList = findViewById(R.id.itemList);
-                itemList.setAdapter(customItemListAdapter);
-                itemList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                    @Override
-                    public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-                        selectedItem = items.get(position);
-                        Intent intent = new Intent(ViewItemsActivity.this, ItemProfileActivity.class);
-                        startActivityForResult(intent, RESULT_OK);
+        List<Item> itemListFromRealm = getItemsFromRealm();
+        if (itemListFromRealm.size() <= 0) {
+            final ItemApi itemApi = getRetrofitGenerator().generateRetrofit().create(ItemApi.class);
+            Call<List<Item>> itemsCall = itemApi.findAllItems();
+            itemsCall.enqueue(new Callback<List<Item>>() {
+                @Override
+                public void onResponse(Call<List<Item>> call, Response<List<Item>> response) {
+                    if (!response.isSuccessful()) {
+                        Toast.makeText(ViewItemsActivity.this, "Code: " + response.code(), Toast.LENGTH_SHORT).show();
+                        return;
                     }
-                });
-            }
+                    items = response.body();
+                    Realm realm = getRealmInstanceGenerator().generateRealmInstance();
+                    realm.beginTransaction();
+                    realm.copyToRealmOrUpdate(items);
+                    realm.commitTransaction();
+                    realm.close();
+                    initializingItemList(getItemsFromRealm());
+                }
 
+                @Override
+                public void onFailure(Call<List<Item>> call, Throwable t) {
+                    Toast.makeText(ViewItemsActivity.this, t.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            });
+        } else {
+            initializingItemList(itemListFromRealm);
+        }
+    }
+
+    private void initializingItemList(List<Item> itemsFromRealm) {
+        CustomItemListAdapter customItemListAdapter = new CustomItemListAdapter(ViewItemsActivity.this, itemsFromRealm);
+        itemList = findViewById(R.id.itemList);
+        itemList.setAdapter(customItemListAdapter);
+        itemList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onFailure(Call<List<Item>> call, Throwable t) {
-                Toast.makeText(ViewItemsActivity.this, t.getMessage(), Toast.LENGTH_SHORT).show();
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
+                selectedItem = items.get(position);
+                Intent intent = new Intent(ViewItemsActivity.this, ItemProfileActivity.class);
+                startActivityForResult(intent, RESULT_OK);
             }
         });
+    }
+
+    private List<Item> getItemsFromRealm() {
+        Realm itemRealm = Realm.getDefaultInstance();
+        return itemRealm.where(Item.class).findAll();
     }
 }

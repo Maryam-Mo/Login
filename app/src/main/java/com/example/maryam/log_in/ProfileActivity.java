@@ -4,22 +4,20 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.maryam.log_in.dto.LoginUser;
 import com.example.maryam.log_in.dto.User;
+import com.example.maryam.log_in.resource.RealmInstanceGenerator;
 import com.example.maryam.log_in.resource.RetrofitGenerator;
 
+import io.realm.Realm;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 public class ProfileActivity extends AppCompatActivity {
     private Button saveBtn;
@@ -32,6 +30,14 @@ public class ProfileActivity extends AppCompatActivity {
     private User selectedUser;
     private Button delete;
     private RetrofitGenerator retrofitGenerator;
+    private RealmInstanceGenerator realmInstanceGenerator;
+
+    public RealmInstanceGenerator getRealmInstanceGenerator() {
+        if (realmInstanceGenerator == null){
+            realmInstanceGenerator = new RealmInstanceGenerator();
+        }
+        return realmInstanceGenerator;
+    }
 
     public RetrofitGenerator getRetrofitGenerator() {
         if (retrofitGenerator == null){
@@ -69,6 +75,9 @@ public class ProfileActivity extends AppCompatActivity {
             getSupportActionBar().setDisplayShowHomeEnabled(true);
         }
         onSaveButtonClicked();
+        if (selectedUser != null) {
+            onDeleteButtonClicked();
+        }
     }
 
     public void onSaveButtonClicked() {
@@ -111,6 +120,11 @@ public class ProfileActivity extends AppCompatActivity {
                                     return;
                                 }
                                 User receivedUser = response.body();
+                                Realm realm = getRealmInstanceGenerator().generateRealmInstance();
+                                realm.beginTransaction();
+                                realm.copyToRealmOrUpdate(receivedUser);
+                                realm.commitTransaction();
+                                realm.close();
                                 Toast.makeText(ProfileActivity.this, "New user is created successfully!", Toast.LENGTH_SHORT).show();
                                 clearFields();
                             }
@@ -131,6 +145,11 @@ public class ProfileActivity extends AppCompatActivity {
                                     return;
                                 }
                                 User receivedUser = response.body();
+                                Realm realm = getRealmInstanceGenerator().generateRealmInstance();
+                                realm.beginTransaction();
+                                realm.copyToRealmOrUpdate(receivedUser);
+                                realm.commitTransaction();
+                                realm.close();
                                 Toast.makeText(ProfileActivity.this, "User is updated successfully!", Toast.LENGTH_SHORT).show();
                                 clearFields();
                             }
@@ -167,6 +186,12 @@ public class ProfileActivity extends AppCompatActivity {
                     if (!response.isSuccessful()) {
                         return;
                     }
+                    Realm realm = getRealmInstanceGenerator().generateRealmInstance();
+                    realm.beginTransaction();
+                    User user = realm.where(User.class).equalTo("id", selectedUser.getId()).findFirst();
+                    user.deleteFromRealm();
+                    realm.commitTransaction();
+                    realm.close();
                     Toast.makeText(ProfileActivity.this, selectedUser.getUsername() + " has been deleted! Please log-in with another user!", Toast.LENGTH_LONG).show();
                     Intent intent = new Intent(ProfileActivity.this, LoginActivity.class);
                     startActivity(intent);
@@ -174,7 +199,7 @@ public class ProfileActivity extends AppCompatActivity {
 
                 @Override
                 public void onFailure(Call<Void> call, Throwable t) {
-//                                result.setText(t.getMessage());
+
                 }
             });
             }

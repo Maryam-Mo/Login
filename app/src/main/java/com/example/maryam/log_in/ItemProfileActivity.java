@@ -11,8 +11,10 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.example.maryam.log_in.dto.Item;
+import com.example.maryam.log_in.resource.RealmInstanceGenerator;
 import com.example.maryam.log_in.resource.RetrofitGenerator;
 
+import io.realm.Realm;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -28,6 +30,14 @@ public class ItemProfileActivity extends AppCompatActivity {
     private Item item;
     public static Item updatedItem;
     private RetrofitGenerator retrofitGenerator;
+    private RealmInstanceGenerator realmInstanceGenerator;
+
+    public RealmInstanceGenerator getRealmInstanceGenerator() {
+        if (realmInstanceGenerator == null){
+            realmInstanceGenerator = new RealmInstanceGenerator();
+        }
+        return realmInstanceGenerator;
+    }
 
     public RetrofitGenerator getRetrofitGenerator() {
         if (retrofitGenerator == null){
@@ -100,6 +110,11 @@ public class ItemProfileActivity extends AppCompatActivity {
                                     return;
                                 }
                                 Item receivedItem = response.body();
+                                Realm realm = getRealmInstanceGenerator().generateRealmInstance();
+                                realm.beginTransaction();
+                                realm.copyToRealmOrUpdate(receivedItem);
+                                realm.commitTransaction();
+                                realm.close();
                                 Toast.makeText(ItemProfileActivity.this, "New Item is created successfully!", Toast.LENGTH_SHORT).show();
                                 clearFields();
                             }
@@ -118,6 +133,11 @@ public class ItemProfileActivity extends AppCompatActivity {
                                     return;
                                 }
                                 updatedItem = response.body();
+                                Realm realm = getRealmInstanceGenerator().generateRealmInstance();
+                                realm.beginTransaction();
+                                realm.copyToRealmOrUpdate(updatedItem);
+                                realm.commitTransaction();
+                                realm.close();
                                 Toast.makeText(ItemProfileActivity.this, "Item is updated successfully!", Toast.LENGTH_SHORT).show();
                                 clearFields();
                             }

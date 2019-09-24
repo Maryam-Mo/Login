@@ -13,15 +13,13 @@ import android.widget.Toast;
 
 import com.example.maryam.log_in.dto.LoginUser;
 import com.example.maryam.log_in.dto.User;
+import com.example.maryam.log_in.resource.RealmInstanceGenerator;
 import com.example.maryam.log_in.resource.RetrofitGenerator;
 
 import io.realm.Realm;
-import io.realm.RealmConfiguration;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 public class LoginActivity extends AppCompatActivity {
     private Button login;
@@ -30,6 +28,14 @@ public class LoginActivity extends AppCompatActivity {
     private EditText password;
     private TextView result;
     private RetrofitGenerator retrofitGenerator;
+    private RealmInstanceGenerator realmInstanceGenerator;
+
+    public RealmInstanceGenerator getRealmInstanceGenerator() {
+        if (realmInstanceGenerator == null){
+            realmInstanceGenerator = new RealmInstanceGenerator();
+        }
+        return realmInstanceGenerator;
+    }
 
     public RetrofitGenerator getRetrofitGenerator() {
         if (retrofitGenerator == null){
@@ -90,18 +96,7 @@ public class LoginActivity extends AppCompatActivity {
                             User user = response.body();
                             LoginUser loginUser = new LoginUser();
                             loginUser.setUsername(user.getUsername());
-                            Realm realm;
-                            try{
-                                realm = Realm.getDefaultInstance();
-
-                            }catch (Exception e){
-
-                                RealmConfiguration config = new RealmConfiguration.Builder()
-                                        .deleteRealmIfMigrationNeeded()
-                                        .build();
-                                realm = Realm.getInstance(config);
-
-                            }
+                            Realm realm = getRealmInstanceGenerator().generateRealmInstance();
                             realm.beginTransaction();
                             realm.deleteAll();
                             realm.copyToRealmOrUpdate(loginUser);

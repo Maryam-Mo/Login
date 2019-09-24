@@ -3,14 +3,18 @@ package com.example.maryam.log_in.dto;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import io.realm.RealmObject;
+import io.realm.annotations.PrimaryKey;
+
 /**
  * Created by maryam on 9/9/19.
  */
 
-public class Item implements Parcelable {
+public class Item extends RealmObject implements Parcelable {
     public Item() {
     }
 
+    @PrimaryKey
     private String id;
     private String name;
     private int quantity;
