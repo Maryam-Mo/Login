@@ -7,8 +7,10 @@ import retrofit2.converter.gson.GsonConverterFactory;
  * Created by maryam on 9/13/19.
  */
 
-public class RetrofitGenerator {
-    public String apiBaseUrl = "http://172.16.1.27:8070/api/";
+public enum RetrofitGenerator {
+    INSTANCE;
+
+    private String apiBaseUrl = "http://172.16.1.27:8070/api/";
 
     public Retrofit generateRetrofit() {
         return new Retrofit.Builder()

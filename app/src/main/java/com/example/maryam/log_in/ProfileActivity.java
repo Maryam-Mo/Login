@@ -32,20 +32,6 @@ public class ProfileActivity extends AppCompatActivity {
     private RetrofitGenerator retrofitGenerator;
     private RealmInstanceGenerator realmInstanceGenerator;
 
-    public RealmInstanceGenerator getRealmInstanceGenerator() {
-        if (realmInstanceGenerator == null){
-            realmInstanceGenerator = new RealmInstanceGenerator();
-        }
-        return realmInstanceGenerator;
-    }
-
-    public RetrofitGenerator getRetrofitGenerator() {
-        if (retrofitGenerator == null){
-            retrofitGenerator = new RetrofitGenerator();
-        }
-        return retrofitGenerator;
-    }
-
     @SuppressLint("RestrictedApi")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -109,7 +95,7 @@ public class ProfileActivity extends AppCompatActivity {
                     userToSave.setLastName(lastName.getText().toString());
                     userToSave.setUsername(username.getText().toString());
                     userToSave.setPassword(password.getText().toString());
-                    UserApi userApi = getRetrofitGenerator().generateRetrofit().create(UserApi.class);
+                    UserApi userApi = RetrofitGenerator.INSTANCE.generateRetrofit().create(UserApi.class);
                     if (!onEdit) {
                         Call<User> createCall = userApi.createUser(userToSave);
                         createCall.enqueue(new Callback<User>() {
@@ -122,7 +108,7 @@ public class ProfileActivity extends AppCompatActivity {
                                 final User receivedUser = response.body();
                                 Realm realm = null;
                                 try {
-                                    realm = getRealmInstanceGenerator().generateRealmInstance();
+                                    realm = RealmInstanceGenerator.INSTANCE.generateRealmInstance();
                                     realm.executeTransaction(new Realm.Transaction() {
                                         @Override
                                         public void execute(Realm realm) {
@@ -156,7 +142,7 @@ public class ProfileActivity extends AppCompatActivity {
                                 final User receivedUser = response.body();
                                 Realm realm = null;
                                 try {
-                                    realm = getRealmInstanceGenerator().generateRealmInstance();
+                                    realm = RealmInstanceGenerator.INSTANCE.generateRealmInstance();
                                     realm.executeTransaction(new Realm.Transaction() {
                                         @Override
                                         public void execute(Realm realm) {
@@ -196,7 +182,7 @@ public class ProfileActivity extends AppCompatActivity {
         delete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                UserApi userApi = getRetrofitGenerator().generateRetrofit().create(UserApi.class);
+                UserApi userApi = RetrofitGenerator.INSTANCE.generateRetrofit().create(UserApi.class);
             Call<Void> call = userApi.delete(selectedUser.getId().toString());
             call.enqueue(new Callback<Void>() {
                 @Override
@@ -204,7 +190,7 @@ public class ProfileActivity extends AppCompatActivity {
                     if (!response.isSuccessful()) {
                         return;
                     }
-                    Realm realm = getRealmInstanceGenerator().generateRealmInstance();
+                    Realm realm = RealmInstanceGenerator.INSTANCE.generateRealmInstance();
                     realm.beginTransaction();
                     User user = realm.where(User.class).equalTo("id", selectedUser.getId()).findFirst();
                     user.deleteFromRealm();

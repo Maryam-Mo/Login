@@ -7,7 +7,9 @@ import io.realm.RealmConfiguration;
  * Created by maryam on 9/24/19.
  */
 
-public class RealmInstanceGenerator {
+public enum  RealmInstanceGenerator {
+    INSTANCE;
+
     public Realm generateRealmInstance() {
         try {
             return Realm.getDefaultInstance();

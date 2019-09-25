@@ -2,7 +2,6 @@ package com.example.maryam.log_in;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
-import android.os.PersistableBundle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -27,29 +26,12 @@ public class LoginActivity extends AppCompatActivity {
     private EditText username;
     private EditText password;
     private TextView result;
-    private RetrofitGenerator retrofitGenerator;
-    private RealmInstanceGenerator realmInstanceGenerator;
-
-    public RealmInstanceGenerator getRealmInstanceGenerator() {
-        if (realmInstanceGenerator == null){
-            realmInstanceGenerator = new RealmInstanceGenerator();
-        }
-        return realmInstanceGenerator;
-    }
-
-    public RetrofitGenerator getRetrofitGenerator() {
-        if (retrofitGenerator == null){
-            retrofitGenerator = new RetrofitGenerator();
-        }
-        return retrofitGenerator;
-    }
 
     @SuppressLint("RestrictedApi")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        Realm.init(this);
         onLoginButtonClicked();
         onSignUpButtonClicked();
         getSupportActionBar().setDefaultDisplayHomeAsUpEnabled(true);
@@ -84,7 +66,7 @@ public class LoginActivity extends AppCompatActivity {
                         password.setError("Password is required!");
                     }
                 } else {
-                    UserApi userApi = getRetrofitGenerator().generateRetrofit().create(UserApi.class);
+                    UserApi userApi = RetrofitGenerator.INSTANCE.generateRetrofit().create(UserApi.class);
                     Call<User> call = userApi.validateUser(username.getText().toString(), password.getText().toString());
                     call.enqueue(new Callback<User>() {
                         @Override
@@ -98,7 +80,7 @@ public class LoginActivity extends AppCompatActivity {
                             loginUser.setUsername(user.getUsername());
                             Realm realm = null;
                             try {
-                                realm = getRealmInstanceGenerator().generateRealmInstance();
+                                realm = RealmInstanceGenerator.INSTANCE.generateRealmInstance();
                                 realm.executeTransaction(new Realm.Transaction() {
                                     @Override
                                     public void execute(Realm realm) {

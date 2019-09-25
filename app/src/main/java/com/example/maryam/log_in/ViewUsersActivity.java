@@ -17,7 +17,6 @@ import com.example.maryam.log_in.resource.RetrofitGenerator;
 import java.util.List;
 
 import io.realm.Realm;
-import io.realm.RealmConfiguration;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -27,20 +26,6 @@ public class ViewUsersActivity extends AppCompatActivity {
     private LoginUser loginUser;
     private RetrofitGenerator retrofitGenerator;
     private RealmInstanceGenerator realmInstanceGenerator;
-
-    public RealmInstanceGenerator getRealmInstanceGenerator() {
-        if (realmInstanceGenerator == null){
-            realmInstanceGenerator = new RealmInstanceGenerator();
-        }
-        return realmInstanceGenerator;
-    }
-
-    public RetrofitGenerator getRetrofitGenerator() {
-        if (retrofitGenerator == null){
-            retrofitGenerator = new RetrofitGenerator();
-        }
-        return retrofitGenerator;
-    }
 
     @SuppressLint("RestrictedApi")
     @Override
@@ -56,7 +41,7 @@ public class ViewUsersActivity extends AppCompatActivity {
         loginUser = realm.where(LoginUser.class).findFirst();
         List<User> userList = getUsersFromRealm();
         if (userList.size() <= 0) {
-            UserApi userApi = getRetrofitGenerator().generateRetrofit().create(UserApi.class);
+            UserApi userApi = RetrofitGenerator.INSTANCE.generateRetrofit().create(UserApi.class);
             Call<List<User>> userscall = userApi.findAllUsers();
             userscall.enqueue(new Callback<List<User>>() {
                 @Override
@@ -68,7 +53,7 @@ public class ViewUsersActivity extends AppCompatActivity {
                     final List<User> userList = response.body();
                     Realm realm = null;
                     try {
-                        realm = getRealmInstanceGenerator().generateRealmInstance();
+                        realm = RealmInstanceGenerator.INSTANCE.generateRealmInstance();
                         realm.executeTransaction(new Realm.Transaction() {
                             @Override
                             public void execute(Realm realm) {

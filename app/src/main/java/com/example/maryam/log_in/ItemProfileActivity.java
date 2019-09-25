@@ -1,25 +1,21 @@
 package com.example.maryam.log_in;
 
 import android.annotation.SuppressLint;
-import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
 import com.example.maryam.log_in.dto.Item;
-import com.example.maryam.log_in.resource.RealmInstanceGenerator;
+import com.example.maryam.log_in.repository.Repository;
 import com.example.maryam.log_in.resource.RetrofitGenerator;
 
-import io.realm.Realm;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
+
 
 public class ItemProfileActivity extends AppCompatActivity {
     private Button save;
@@ -29,22 +25,6 @@ public class ItemProfileActivity extends AppCompatActivity {
     public static boolean onEdit;
     private Item item;
     public static Item updatedItem;
-    private RetrofitGenerator retrofitGenerator;
-    private RealmInstanceGenerator realmInstanceGenerator;
-
-    public RealmInstanceGenerator getRealmInstanceGenerator() {
-        if (realmInstanceGenerator == null){
-            realmInstanceGenerator = new RealmInstanceGenerator();
-        }
-        return realmInstanceGenerator;
-    }
-
-    public RetrofitGenerator getRetrofitGenerator() {
-        if (retrofitGenerator == null){
-            retrofitGenerator = new RetrofitGenerator();
-        }
-        return retrofitGenerator;
-    }
 
     @SuppressLint("RestrictedApi")
     @Override
@@ -100,7 +80,7 @@ public class ItemProfileActivity extends AppCompatActivity {
                     itemToSave.setName(name.getText().toString());
                     itemToSave.setPrice(Double.parseDouble(price.getText().toString()));
                     itemToSave.setQuantity(Integer.parseInt(quantity.getText().toString()));
-                    final ItemApi itemApi = getRetrofitGenerator().generateRetrofit().create(ItemApi.class);
+                    final ItemApi itemApi = RetrofitGenerator.INSTANCE.generateRetrofit().create(ItemApi.class);
                     if (!onEdit) {
                         Call<Item> createCall = itemApi.createItem(itemToSave);
                         createCall.enqueue(new Callback<Item>() {
@@ -110,11 +90,7 @@ public class ItemProfileActivity extends AppCompatActivity {
                                     return;
                                 }
                                 Item receivedItem = response.body();
-                                Realm realm = getRealmInstanceGenerator().generateRealmInstance();
-                                realm.beginTransaction();
-                                realm.copyToRealmOrUpdate(receivedItem);
-                                realm.commitTransaction();
-                                realm.close();
+                                Repository.INSTANCE.getItemRepository().create(receivedItem);
                                 Toast.makeText(ItemProfileActivity.this, "New Item is created successfully!", Toast.LENGTH_SHORT).show();
                                 clearFields();
                             }
@@ -133,11 +109,7 @@ public class ItemProfileActivity extends AppCompatActivity {
                                     return;
                                 }
                                 updatedItem = response.body();
-                                Realm realm = getRealmInstanceGenerator().generateRealmInstance();
-                                realm.beginTransaction();
-                                realm.copyToRealmOrUpdate(updatedItem);
-                                realm.commitTransaction();
-                                realm.close();
+                                Repository.INSTANCE.getItemRepository().create(updatedItem);
                                 Toast.makeText(ItemProfileActivity.this, "Item is updated successfully!", Toast.LENGTH_SHORT).show();
                                 clearFields();
                             }
