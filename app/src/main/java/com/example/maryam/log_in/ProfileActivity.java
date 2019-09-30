@@ -13,6 +13,7 @@ import android.widget.Toast;
 import com.example.maryam.log_in.dto.User;
 import com.example.maryam.log_in.resource.RealmInstanceGenerator;
 import com.example.maryam.log_in.resource.RetrofitGenerator;
+import com.example.maryam.log_in.login.view.LoginActivity;
 
 import io.realm.Realm;
 import retrofit2.Call;
