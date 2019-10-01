@@ -1,7 +1,8 @@
-package com.example.maryam.log_in;
+package com.example.maryam.log_in.user.view;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -9,10 +10,17 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.example.maryam.log_in.R;
+import com.example.maryam.log_in.api.UserApi;
 import com.example.maryam.log_in.dto.LoginUser;
 import com.example.maryam.log_in.dto.User;
+import com.example.maryam.log_in.login.realm.RealmLo;
+import com.example.maryam.log_in.login.view.LoginActivity;
 import com.example.maryam.log_in.resource.RealmInstanceGenerator;
 import com.example.maryam.log_in.resource.RetrofitGenerator;
+import com.example.maryam.log_in.user.OnFindAllUsersListener;
+import com.example.maryam.log_in.user.presenter.UserPresenter;
+import com.example.maryam.log_in.user.presenter.UserPresenterImpl;
 
 import java.util.List;
 
@@ -21,11 +29,12 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class ViewUsersActivity extends AppCompatActivity {
+public class ViewUsersActivity extends AppCompatActivity implements UserView {
     private ListView userList;
     private LoginUser loginUser;
     private RetrofitGenerator retrofitGenerator;
     private RealmInstanceGenerator realmInstanceGenerator;
+    private UserPresenter userPresenter;
 
     @SuppressLint("RestrictedApi")
     @Override
@@ -33,54 +42,37 @@ public class ViewUsersActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_users);
         userList = findViewById(R.id.userList);
+        userPresenter = new UserPresenterImpl(this);
+        userPresenter.findAllUsers(new OnFindAllUsersListener() {
+            @Override
+            public void onSuccess(@NonNull List<User> userList) {
+                initializingUserList(userList);
+            }
+
+            @Override
+            public void onError(@NonNull Throwable throwable) {
+                showOnNotSuccessfulFind(throwable.getMessage());
+            }
+
+            @Override
+            public void onError() {
+                showOnNotSuccessfulFind("There is an error! :D");
+            }
+        });
+        backButtonClicked();
+        findLoginUser();
+        userPresenter = new UserPresenterImpl(this);
+    }
+
+    private void findLoginUser() {
+        loginUser = RealmLo.INSTANCE.getRealmLogin().findLoginUser();
+    }
+
+    private void backButtonClicked() {
         if(getSupportActionBar() != null){
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setDisplayShowHomeEnabled(true);
         }
-        Realm realm = Realm.getDefaultInstance();
-        loginUser = realm.where(LoginUser.class).findFirst();
-        List<User> userList = getUsersFromRealm();
-        if (userList.size() <= 0) {
-            UserApi userApi = RetrofitGenerator.INSTANCE.generateRetrofit().create(UserApi.class);
-            Call<List<User>> userscall = userApi.findAllUsers();
-            userscall.enqueue(new Callback<List<User>>() {
-                @Override
-                public void onResponse(Call<List<User>> call, Response<List<User>> response) {
-                    if (!response.isSuccessful()) {
-                        Toast.makeText(ViewUsersActivity.this, "Code: " + response.code(), Toast.LENGTH_SHORT).show();
-                        return;
-                    }
-                    final List<User> userList = response.body();
-                    Realm realm = null;
-                    try {
-                        realm = RealmInstanceGenerator.INSTANCE.generateRealmInstance();
-                        realm.executeTransaction(new Realm.Transaction() {
-                            @Override
-                            public void execute(Realm realm) {
-                                realm.insertOrUpdate(userList);
-                            }
-                        });
-                    } finally {
-                        if(realm != null) {
-                            realm.close();
-                        }
-                    }
-                    initializingUserList(getUsersFromRealm());
-                }
-
-                @Override
-                public void onFailure(Call<List<User>> call, Throwable t) {
-                    Toast.makeText(ViewUsersActivity.this, t.getMessage(), Toast.LENGTH_SHORT).show();
-                }
-            });
-        } else {
-            initializingUserList(userList);
-        }
-    }
-
-    private List<User> getUsersFromRealm() {
-        Realm userRealm = Realm.getDefaultInstance();
-        return userRealm.where(User.class).findAll();
     }
 
     private void initializingUserList(final List<User> users) {
@@ -102,6 +94,10 @@ public class ViewUsersActivity extends AppCompatActivity {
         });
     }
 
+    @Override
+    public void showOnNotSuccessfulFind(String message) {
+        Toast.makeText(ViewUsersActivity.this, message, Toast.LENGTH_LONG).show();
+    }
 
     @Override
     protected void onDestroy() {

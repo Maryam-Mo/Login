@@ -6,7 +6,7 @@ package com.example.maryam.log_in.login.presenter;
 
 public interface LoginPresenter {
     void loginCredential(String username, String password);
-    void ShowNotSuccesfulLoginResponse(String message);
+    void showNotSuccesfulLoginResponse(String message);
     void clearField();
     void actOnSuccessfulLogin(String message);
 }

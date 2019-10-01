@@ -1,10 +1,7 @@
 package com.example.maryam.log_in.login.realm;
 
-import com.example.maryam.log_in.dto.Item;
 import com.example.maryam.log_in.dto.LoginUser;
 import com.example.maryam.log_in.dto.User;
-
-import java.util.List;
 
 import io.realm.Realm;
 
@@ -30,7 +27,7 @@ public class RealmLoginImpl implements RealmLogin {
     }
 
     @Override
-    public List<LoginUser> findAll() {
-        return realmInstance.where(LoginUser.class).findAll();
+    public LoginUser findLoginUser() {
+        return realmInstance.where(LoginUser.class).findFirst();
     }
 }

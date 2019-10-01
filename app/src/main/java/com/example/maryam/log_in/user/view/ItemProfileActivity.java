@@ -1,4 +1,4 @@
-package com.example.maryam.log_in;
+package com.example.maryam.log_in.user.view;
 
 import android.annotation.SuppressLint;
 import android.support.v7.app.AppCompatActivity;
@@ -8,6 +8,9 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.example.maryam.log_in.R;
+import com.example.maryam.log_in.item.presenter.ViewItemsActivity;
+import com.example.maryam.log_in.api.ItemApi;
 import com.example.maryam.log_in.dto.Item;
 import com.example.maryam.log_in.repository.Repository;
 import com.example.maryam.log_in.resource.RetrofitGenerator;

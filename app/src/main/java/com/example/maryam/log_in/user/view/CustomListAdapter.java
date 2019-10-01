@@ -1,4 +1,4 @@
-package com.example.maryam.log_in;
+package com.example.maryam.log_in.user.view;
 
 import android.app.Activity;
 import android.support.annotation.NonNull;
@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
+import com.example.maryam.log_in.R;
 import com.example.maryam.log_in.dto.User;
 
 import java.util.List;

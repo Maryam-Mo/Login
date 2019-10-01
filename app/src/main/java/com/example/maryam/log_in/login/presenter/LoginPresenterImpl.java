@@ -1,5 +1,6 @@
 package com.example.maryam.log_in.login.presenter;
 
+import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
 import com.example.maryam.log_in.login.model.LoginModel;
@@ -38,14 +39,23 @@ public class LoginPresenterImpl implements LoginPresenter {
                 @Override
                 public void clearFields() {
                     clearField();
-                    actOnSuccessfulLogin("The user logged in successfully!");
+                }
+
+                @Override
+                public void onError(@NonNull Throwable throwable) {
+                    showNotSuccesfulLoginResponse(throwable.getMessage());
+                }
+
+                @Override
+                public void onError() {
+                    showNotSuccesfulLoginResponse("Username or Password is wrong!");
                 }
             });
         }
     }
 
     @Override
-    public void ShowNotSuccesfulLoginResponse(String message) {
+    public void showNotSuccesfulLoginResponse(String message) {
         loginView.showOnNotSuccessfulLogin(message);
     }
 

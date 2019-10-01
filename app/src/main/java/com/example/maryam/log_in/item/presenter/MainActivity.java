@@ -1,4 +1,4 @@
-package com.example.maryam.log_in;
+package com.example.maryam.log_in.item.presenter;
 
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
@@ -6,10 +6,8 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 
-import com.example.maryam.log_in.dto.LoginUser;
-import com.example.maryam.log_in.dto.User;
-
-import io.realm.Realm;
+import com.example.maryam.log_in.R;
+import com.example.maryam.log_in.user.view.ViewUsersActivity;
 
 public class MainActivity extends AppCompatActivity {
     private Button user;

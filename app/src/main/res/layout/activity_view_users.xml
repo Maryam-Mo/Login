@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.maryam.log_in.ViewUsersActivity">
+    tools:context="com.example.maryam.log_in.user.view.ViewUsersActivity">
 
     <ListView
         android:id="@+id/userList"

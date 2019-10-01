@@ -1,7 +1,9 @@
-package com.example.maryam.log_in;
+package com.example.maryam.log_in.item.presenter;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+
+import com.example.maryam.log_in.R;
 
 public class ListviewItemRowActivity extends AppCompatActivity {
 

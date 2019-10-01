@@ -1,4 +1,4 @@
-package com.example.maryam.log_in;
+package com.example.maryam.log_in.api;
 
 import com.example.maryam.log_in.dto.User;
 
@@ -26,7 +26,7 @@ public interface UserApi {
     @POST("user/update")
     Call<User> updateUser(@Body User user);
 
-    @GET("user/findAll")
+    @GET("user/findLoginUser")
     Call<List<User>> findAllUsers();
 
     @DELETE("user/delete")

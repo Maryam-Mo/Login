@@ -1,4 +1,4 @@
-package com.example.maryam.log_in;
+package com.example.maryam.log_in.api;
 
 import com.example.maryam.log_in.dto.Item;
 
@@ -20,6 +20,6 @@ public interface ItemApi {
     @POST("item/update")
     Call<Item> updateItem(@Body Item item);
 
-    @GET("item/findAll")
+    @GET("item/findLoginUser")
     Call<List<Item>> findAllItems();
 }

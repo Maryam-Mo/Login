@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.maryam.log_in.ItemProfileActivity">
+    tools:context="com.example.maryam.log_in.user.view.ItemProfileActivity">
 
     <TextView
         android:id="@+id/text4"

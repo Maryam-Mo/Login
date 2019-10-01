@@ -37,12 +37,16 @@ public class LoginModelImpl implements LoginModel {
 
             @Override
             public void onError(@NonNull Throwable throwable) {
-                loginPresenter.ShowNotSuccesfulLoginResponse(throwable.toString());
+                if (onSuccessfulLoginListener != null) {
+                    onSuccessfulLoginListener.onError(throwable);
+                }
             }
 
             @Override
             public void onError() {
-                loginPresenter.ShowNotSuccesfulLoginResponse("Username or Password is invalid!");
+                if (onSuccessfulLoginListener != null) {
+                    onSuccessfulLoginListener.onError();
+                }
             }
 
         });
@@ -54,7 +58,7 @@ public class LoginModelImpl implements LoginModel {
 //            @Override
 //            public void onResponse(Call<User> call, Response<User> response) {
 //                if (!response.isSuccessful()) {
-//                    loginPresenter.ShowNotSuccesfulLoginResponse("Username or Password is invalid!");
+//                    loginPresenter.showNotSuccesfulLoginResponse("Username or Password is invalid!");
 //                    return;
 //                }
 //                User user = response.body();

@@ -1,10 +1,8 @@
 package com.example.maryam.log_in.login.webservice;
 
-import com.example.maryam.log_in.UserApi;
+import com.example.maryam.log_in.api.UserApi;
 import com.example.maryam.log_in.dto.User;
 import com.example.maryam.log_in.resource.RetrofitGenerator;
-
-import javax.annotation.Nullable;
 
 import retrofit2.Call;
 import retrofit2.Callback;
