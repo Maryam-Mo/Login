@@ -1,4 +1,4 @@
-package com.example.maryam.log_in.item.presenter;
+package com.example.maryam.log_in.item.view;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
@@ -14,7 +14,6 @@ import com.example.maryam.log_in.api.ItemApi;
 import com.example.maryam.log_in.dto.Item;
 import com.example.maryam.log_in.repository.Repository;
 import com.example.maryam.log_in.resource.RetrofitGenerator;
-import com.example.maryam.log_in.user.view.ItemProfileActivity;
 
 import java.util.List;
 

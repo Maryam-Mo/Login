@@ -9,7 +9,9 @@ import java.util.List;
  */
 
 public interface RealmUser {
-    List<User> findALl();
 
+    List<User> findALl();
     void create(List<User> users);
+    void create(User user);
+    void delete(User user);
 }

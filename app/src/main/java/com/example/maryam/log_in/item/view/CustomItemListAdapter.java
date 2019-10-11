@@ -1,4 +1,4 @@
-package com.example.maryam.log_in.item.presenter;
+package com.example.maryam.log_in.item.view;
 
 import android.app.Activity;
 import android.support.annotation.NonNull;

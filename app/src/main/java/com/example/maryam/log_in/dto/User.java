@@ -40,6 +40,14 @@ public class User extends RealmObject implements Parcelable{
         }
     };
 
+    public User(String id, String username, String lastName, String firstName, String password) {
+        this.id = id;
+        this.username = username;
+        this.lastName = lastName;
+        this.firstName = firstName;
+        this.password = password;
+    }
+
     public String getId() {
         return id;
     }

@@ -36,10 +36,10 @@
         <activity
             android:name=".user.view.ViewUsersActivity"
             android:label="View Users"
-            android:parentActivityName=".item.presenter.MainActivity">
+            android:parentActivityName=".item.view.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".item.presenter.MainActivity" />
+                android:value=".item.view.MainActivity" />
 
             <intent-filter>
                 <action android:name="com.example.maryam.log_in.ViewUsersActivity" />
@@ -48,7 +48,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".item.presenter.MainActivity"
+            android:name=".item.view.MainActivity"
             android:label="Main"
             android:parentActivityName=".login.view.LoginActivity">
             <meta-data
@@ -62,33 +62,33 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".item.presenter.ViewItemsActivity"
+            android:name=".item.view.ViewItemsActivity"
             android:label="View Items"
-            android:parentActivityName=".item.presenter.ItemMainActivity">
+            android:parentActivityName=".item.view.ItemMainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".item.presenter.ItemMainActivity" />
+                android:value=".item.view.ItemMainActivity" />
             <intent-filter>
                 <action android:name="com.example.maryam.log_in.ViewItemsActivity" />
 
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-        <activity android:name=".item.presenter.ListviewItemRowActivity" />
+        <activity android:name=".item.view.ListviewItemRowActivity" />
         <activity
-            android:name=".item.presenter.ItemMainActivity"
+            android:name=".item.view.ItemMainActivity"
             android:label="Item"
-            android:parentActivityName=".item.presenter.MainActivity">
+            android:parentActivityName=".item.view.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".item.presenter.MainActivity" />
+                android:value=".item.view.MainActivity" />
             <intent-filter>
                 <action android:name="com.example.maryam.log_in.ItemMainActivity" />
 
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-        <activity android:name=".user.view.ItemProfileActivity"
+        <activity android:name=".item.view.ItemProfileActivity"
             android:label="Manage An Activity"
             android:parentActivityName=".user.view.ViewUsersActivity">
             <meta-data

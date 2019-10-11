@@ -16,13 +16,15 @@ import com.example.maryam.log_in.dto.User;
 import com.example.maryam.log_in.resource.RealmInstanceGenerator;
 import com.example.maryam.log_in.resource.RetrofitGenerator;
 import com.example.maryam.log_in.login.view.LoginActivity;
+import com.example.maryam.log_in.user.presenter.UserPresenter;
+import com.example.maryam.log_in.user.presenter.UserPresenterImpl;
 
 import io.realm.Realm;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class ProfileActivity extends AppCompatActivity {
+public class ProfileActivity extends AppCompatActivity implements UserProfile{
     private Button saveBtn;
     private EditText username;
     private EditText password;
@@ -32,8 +34,8 @@ public class ProfileActivity extends AppCompatActivity {
     private TextView result;
     private User selectedUser;
     private Button delete;
-    private RetrofitGenerator retrofitGenerator;
-    private RealmInstanceGenerator realmInstanceGenerator;
+    private String loginUser;
+    private UserPresenter userPresenter;
 
     @SuppressLint("RestrictedApi")
     @Override
@@ -45,6 +47,13 @@ public class ProfileActivity extends AppCompatActivity {
         firstName = findViewById(R.id.firstNameTxt);
         lastName = findViewById(R.id.lastNameTxt);
         Intent intent = getIntent();
+        checkIntentContent(intent);
+        userPresenter = new UserPresenterImpl(this);
+        backButtonClicked();
+        onSaveButtonClicked();
+    }
+
+    private void checkIntentContent(Intent intent) {
         if (intent.hasExtra("object")){
             selectedUser = intent.getParcelableExtra("object");
             username.setText(selectedUser.getUsername());
@@ -59,13 +68,12 @@ public class ProfileActivity extends AppCompatActivity {
             firstName.setText("");
             lastName.setText("");
         }
+    }
+
+    private void backButtonClicked() {
         if(getSupportActionBar() != null){
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setDisplayShowHomeEnabled(true);
-        }
-        onSaveButtonClicked();
-        if (selectedUser != null) {
-            onDeleteButtonClicked();
         }
     }
 
@@ -75,98 +83,12 @@ public class ProfileActivity extends AppCompatActivity {
         saveBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                boolean userNameIsEmpty = username.getText().toString().length() == 0;
-                boolean passwordIsEmpty = password.getText().toString().length() == 0;
-                boolean firstNameIsEmpty = firstName.getText().toString().length() == 0;
-                boolean lastNameIsEmpty = lastName.getText().toString().length() == 0;
-                if (userNameIsEmpty || passwordIsEmpty || firstNameIsEmpty || lastNameIsEmpty) {
-                    if (firstNameIsEmpty) {
-                        firstName.setError("First Name is required!");
-                    }
-                    if (lastNameIsEmpty) {
-                        lastName.setError("Last Name is required!");
-                    }
-                    if (userNameIsEmpty) {
-                        username.setError("Username is required!");
-                    }
-                    if (passwordIsEmpty) {
-                        password.setError("Password is required!");
-                    }
+                if (selectedUser != null && selectedUser.getId() != null) {
+                    userPresenter.updateUser(firstName.getText().toString(), lastName.getText().toString(),
+                            username.getText().toString(), password.getText().toString(), selectedUser.getId());
                 } else {
-                    User userToSave = new User();
-                    userToSave.setFirstName(firstName.getText().toString());
-                    userToSave.setLastName(lastName.getText().toString());
-                    userToSave.setUsername(username.getText().toString());
-                    userToSave.setPassword(password.getText().toString());
-                    UserApi userApi = RetrofitGenerator.INSTANCE.generateRetrofit().create(UserApi.class);
-                    if (!onEdit) {
-                        Call<User> createCall = userApi.createUser(userToSave);
-                        createCall.enqueue(new Callback<User>() {
-                            @Override
-                            public void onResponse(Call<User> call, Response<User> response) {
-                                if (!response.isSuccessful()) {
-                                    result.setText(response.message());
-                                    return;
-                                }
-                                final User receivedUser = response.body();
-                                Realm realm = null;
-                                try {
-                                    realm = RealmInstanceGenerator.INSTANCE.generateRealmInstance();
-                                    realm.executeTransaction(new Realm.Transaction() {
-                                        @Override
-                                        public void execute(Realm realm) {
-                                            realm.insertOrUpdate(receivedUser);
-                                        }
-                                    });
-                                } finally {
-                                    if(realm != null) {
-                                        realm.close();
-                                    }
-                                }
-                                Toast.makeText(ProfileActivity.this, "New user is created successfully!", Toast.LENGTH_SHORT).show();
-                                clearFields();
-                            }
-
-                            @Override
-                            public void onFailure(Call<User> call, Throwable t) {
-                                result.setText(t.getMessage());
-                            }
-                        });
-                    } else {
-                        userToSave.setId(selectedUser.getId());
-                        Call<User> updateCall = userApi.updateUser(userToSave);
-                        updateCall.enqueue(new Callback<User>() {
-                            @Override
-                            public void onResponse(Call<User> call, Response<User> response) {
-                                if (!response.isSuccessful()) {
-                                    result.setText(response.message());
-                                    return;
-                                }
-                                final User receivedUser = response.body();
-                                Realm realm = null;
-                                try {
-                                    realm = RealmInstanceGenerator.INSTANCE.generateRealmInstance();
-                                    realm.executeTransaction(new Realm.Transaction() {
-                                        @Override
-                                        public void execute(Realm realm) {
-                                            realm.insertOrUpdate(receivedUser);
-                                        }
-                                    });
-                                } finally {
-                                    if(realm != null) {
-                                        realm.close();
-                                    }
-                                }
-                                Toast.makeText(ProfileActivity.this, "User is updated successfully!", Toast.LENGTH_SHORT).show();
-                                clearFields();
-                            }
-
-                            @Override
-                            public void onFailure(Call<User> call, Throwable t) {
-                                result.setText(t.getMessage());
-                            }
-                        });
-                    }
+                    userPresenter.saveUser(firstName.getText().toString(), lastName.getText().toString(),
+                            username.getText().toString(), password.getText().toString());
                 }
             }
         });
@@ -185,31 +107,60 @@ public class ProfileActivity extends AppCompatActivity {
         delete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                UserApi userApi = RetrofitGenerator.INSTANCE.generateRetrofit().create(UserApi.class);
-            Call<Void> call = userApi.delete(selectedUser.getId().toString());
-            call.enqueue(new Callback<Void>() {
-                @Override
-                public void onResponse(Call<Void> call, Response<Void> response) {
-                    if (!response.isSuccessful()) {
-                        return;
-                    }
-                    Realm realm = RealmInstanceGenerator.INSTANCE.generateRealmInstance();
-                    realm.beginTransaction();
-                    User user = realm.where(User.class).equalTo("id", selectedUser.getId()).findFirst();
-                    user.deleteFromRealm();
-                    realm.commitTransaction();
-                    realm.close();
-                    Toast.makeText(ProfileActivity.this, selectedUser.getUsername() + " has been deleted! Please log-in with another user!", Toast.LENGTH_LONG).show();
-                    Intent intent = new Intent(ProfileActivity.this, LoginActivity.class);
-                    startActivity(intent);
-                }
-
-                @Override
-                public void onFailure(Call<Void> call, Throwable t) {
-
-                }
-            });
+            userPresenter.delete(selectedUser);
             }
         });
+    }
+
+    @Override
+    public void showErrorOnEmptyFirstNameField() {
+        firstName.setError("First Name is required!");
+    }
+
+    @Override
+    public void showErrorOnEmptyLastNameField() {
+        lastName.setError("Last Name is required!");
+    }
+
+    @Override
+    public void showErrorOnEmptyUsernameField() {
+        username.setError("Username is required!");
+    }
+
+    @Override
+    public void showErrorOnEmptyPasswordField() {
+        password.setError("Password is required!");
+    }
+
+    public void onSuccessfulSaveUser() {
+        Toast.makeText(ProfileActivity.this, "New User is created successfully!", Toast.LENGTH_SHORT).show();
+        clearFields();
+    }
+
+    public void onSuccessfulUpdateUser() {
+        Toast.makeText(ProfileActivity.this, "User is updated successfully!", Toast.LENGTH_SHORT).show();
+        clearFields();
+    }
+
+    @Override
+    public void showOnNotSuccessfulSaveUser() {
+        Toast.makeText(ProfileActivity.this, "There is a problem :D", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void showOnError(Throwable throwable) {
+        Toast.makeText(ProfileActivity.this, throwable.getMessage(), Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void showOnNotSuccessfulUpdateUser() {
+        Toast.makeText(ProfileActivity.this, "There is a problem :D", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onDeleteAcitivity() {
+        Toast.makeText(ProfileActivity.this, selectedUser.getUsername() + " has been deleted! Please log-in with another user!", Toast.LENGTH_LONG).show();
+        Intent intent = new Intent(ProfileActivity.this, LoginActivity.class);
+        startActivity(intent);
     }
 }

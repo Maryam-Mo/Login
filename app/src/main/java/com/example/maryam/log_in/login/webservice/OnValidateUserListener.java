@@ -2,6 +2,7 @@ package com.example.maryam.log_in.login.webservice;
 
 import android.support.annotation.NonNull;
 
+import com.example.maryam.log_in.dto.LoginUser;
 import com.example.maryam.log_in.dto.User;
 
 import javax.annotation.Nonnull;
@@ -11,7 +12,7 @@ import javax.annotation.Nonnull;
  */
 
 public interface OnValidateUserListener {
-    void onSuccess(@NonNull User user);
+    void onSuccess(@NonNull LoginUser user);
     void onError(@NonNull Throwable throwable);
     void onError();
 }

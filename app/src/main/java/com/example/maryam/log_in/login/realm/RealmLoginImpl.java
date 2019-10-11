@@ -17,7 +17,7 @@ public class RealmLoginImpl implements RealmLogin {
     }
 
     @Override
-    public void create(final User user) {
+    public void create(final LoginUser user) {
         realmInstance.executeTransaction(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {

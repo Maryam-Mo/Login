@@ -8,6 +8,6 @@ import com.example.maryam.log_in.dto.User;
  */
 
 public interface RealmLogin {
-    void create(User user);
+    void create(LoginUser user);
     LoginUser findLoginUser();
 }

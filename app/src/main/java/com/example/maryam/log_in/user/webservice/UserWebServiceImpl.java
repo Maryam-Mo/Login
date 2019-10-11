@@ -3,7 +3,7 @@ package com.example.maryam.log_in.user.webservice;
 import com.example.maryam.log_in.api.UserApi;
 import com.example.maryam.log_in.dto.User;
 import com.example.maryam.log_in.resource.RetrofitGenerator;
-import com.example.maryam.log_in.user.OnFindAllUsersListener;
+import com.example.maryam.log_in.user.OnUserListener;
 
 import java.util.List;
 
@@ -16,42 +16,106 @@ import retrofit2.Response;
  */
 
 class UserWebServiceImpl implements UserWebService {
+
     @Override
-    public void findAllUsers(final OnFindAllUsersListener onFindAllUsersListener) {
+    public void findAllUsers(final OnUserListener onUserListener) {
         UserApi userApi = RetrofitGenerator.INSTANCE.generateRetrofit().create(UserApi.class);
         Call<List<User>> userscall = userApi.findAllUsers();
         userscall.enqueue(new Callback<List<User>>() {
             @Override
             public void onResponse(Call<List<User>> call, Response<List<User>> response) {
                 if (!response.isSuccessful()) {
-                    if (onFindAllUsersListener != null){
-                        onFindAllUsersListener.onError();
+                    if (onUserListener != null){
+                        onUserListener.onError();
                     }
                 }
-                if (onFindAllUsersListener != null){
-                    onFindAllUsersListener.onSuccess(response.body());
+                if (onUserListener != null){
+                    onUserListener.onSuccess(response.body());
                 }
-//                Realm realm = null;
-//                try {
-//                    realm = RealmInstanceGenerator.INSTANCE.generateRealmInstance();
-//                    realm.executeTransaction(new Realm.Transaction() {
-//                        @Override
-//                        public void execute(Realm realm) {
-//                            realm.insertOrUpdate(userList);
-//                        }
-//                    });
-//                } finally {
-//                    if(realm != null) {
-//                        realm.close();
-//                    }
-//                }
-//                initializingUserList(getUsersFromRealm());
             }
 
             @Override
             public void onFailure(Call<List<User>> call, Throwable t) {
-                if (onFindAllUsersListener != null){
-                    onFindAllUsersListener.onError(t);
+                if (onUserListener != null){
+                    onUserListener.onError(t);
+                }
+            }
+        });
+    }
+
+    @Override
+    public void createUser(final User userToSave, final OnUserListener onUserListener) {
+        UserApi userApi = RetrofitGenerator.INSTANCE.generateRetrofit().create(UserApi.class);
+        Call<User> createCall = userApi.createUser(userToSave);
+        createCall.enqueue(new Callback<User>() {
+            @Override
+            public void onResponse(Call<User> call, Response<User> response) {
+                if (!response.isSuccessful()) {
+                    if (onUserListener != null){
+                        onUserListener.onError();
+                    }
+                }
+                if (onUserListener != null){
+                    onUserListener.onSuccess(response.body());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<User> call, Throwable t) {
+                if (onUserListener != null){
+                    onUserListener.onError(t);
+                }
+            }
+        });
+    }
+
+    @Override
+    public void updateUser(final User userToSave, final OnUserListener onUserListener) {
+        UserApi userApi = RetrofitGenerator.INSTANCE.generateRetrofit().create(UserApi.class);
+        Call<User> updateCall = userApi.updateUser(userToSave);
+        updateCall.enqueue(new Callback<User>() {
+            @Override
+            public void onResponse(Call<User> call, Response<User> response) {
+                if (!response.isSuccessful()) {
+                    if (onUserListener != null){
+                        onUserListener.onError();
+                    }
+                }
+                if (onUserListener != null){
+                    onUserListener.onSuccess(response.body());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<User> call, Throwable t) {
+                if (onUserListener != null){
+                    onUserListener.onError(t);
+                }
+            }
+        });
+    }
+
+    @Override
+    public void deleteUser(final User userToDelete, final OnUserListener onUserListener) {
+        UserApi userApi = RetrofitGenerator.INSTANCE.generateRetrofit().create(UserApi.class);
+        Call<Void> deleteCall = userApi.delete(userToDelete.getId());
+        deleteCall.enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                if (!response.isSuccessful()) {
+                    if (onUserListener != null){
+                        onUserListener.onError();
+                    }
+                }
+                if (onUserListener != null){
+                    onUserListener.onSuccess();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+                if (onUserListener != null){
+                    onUserListener.onError(t);
                 }
             }
         });

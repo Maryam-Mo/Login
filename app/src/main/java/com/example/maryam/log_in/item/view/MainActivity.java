@@ -1,4 +1,4 @@
-package com.example.maryam.log_in.item.presenter;
+package com.example.maryam.log_in.item.view;
 
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;

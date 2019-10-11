@@ -1,6 +1,5 @@
 package com.example.maryam.log_in.user.realm;
 
-import com.example.maryam.log_in.dto.LoginUser;
 import com.example.maryam.log_in.dto.User;
 
 import java.util.List;
@@ -30,6 +29,27 @@ public class RealmUserImpl implements RealmUser {
             @Override
             public void execute(Realm realm) {
                 realm.insertOrUpdate(users);
+            }
+        });
+    }
+
+    @Override
+    public void create(final User user) {
+        realmInstance.executeTransaction(new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm) {
+                realm.insertOrUpdate(user);
+            }
+        });
+    }
+
+    @Override
+    public void delete(final User selectedUser) {
+        realmInstance.executeTransaction(new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm) {
+                User user = realm.where(User.class).equalTo("id", selectedUser.getId()).findFirst();
+                user.deleteFromRealm();
             }
         });
     }

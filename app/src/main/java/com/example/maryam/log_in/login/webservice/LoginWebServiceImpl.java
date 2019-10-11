@@ -1,6 +1,7 @@
 package com.example.maryam.log_in.login.webservice;
 
 import com.example.maryam.log_in.api.UserApi;
+import com.example.maryam.log_in.dto.LoginUser;
 import com.example.maryam.log_in.dto.User;
 import com.example.maryam.log_in.resource.RetrofitGenerator;
 
@@ -34,7 +35,9 @@ public class LoginWebServiceImpl implements LoginWebService{
                     }
                 }
                 if (onValidateUserListener != null){
-                    onValidateUserListener.onSuccess(response.body());
+                    LoginUser loginUser = new LoginUser();
+                    loginUser.setUsername(response.body().getUsername());
+                    onValidateUserListener.onSuccess(loginUser);
                 }
             }
 

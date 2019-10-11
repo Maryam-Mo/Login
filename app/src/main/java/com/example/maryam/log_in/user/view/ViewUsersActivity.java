@@ -11,29 +11,19 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.example.maryam.log_in.R;
-import com.example.maryam.log_in.api.UserApi;
-import com.example.maryam.log_in.dto.LoginUser;
 import com.example.maryam.log_in.dto.User;
-import com.example.maryam.log_in.login.realm.RealmLo;
-import com.example.maryam.log_in.login.view.LoginActivity;
-import com.example.maryam.log_in.resource.RealmInstanceGenerator;
-import com.example.maryam.log_in.resource.RetrofitGenerator;
-import com.example.maryam.log_in.user.OnFindAllUsersListener;
+import com.example.maryam.log_in.user.OnFindAllUsersAndLoginUserListener;
 import com.example.maryam.log_in.user.presenter.UserPresenter;
 import com.example.maryam.log_in.user.presenter.UserPresenterImpl;
 
 import java.util.List;
 
-import io.realm.Realm;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
+import javax.annotation.Nonnull;
+
 
 public class ViewUsersActivity extends AppCompatActivity implements UserView {
     private ListView userList;
-    private LoginUser loginUser;
-    private RetrofitGenerator retrofitGenerator;
-    private RealmInstanceGenerator realmInstanceGenerator;
+    private String loginUser;
     private UserPresenter userPresenter;
 
     @SuppressLint("RestrictedApi")
@@ -43,9 +33,11 @@ public class ViewUsersActivity extends AppCompatActivity implements UserView {
         setContentView(R.layout.activity_view_users);
         userList = findViewById(R.id.userList);
         userPresenter = new UserPresenterImpl(this);
-        userPresenter.findAllUsers(new OnFindAllUsersListener() {
+        userPresenter.findAllUsers(new OnFindAllUsersAndLoginUserListener() {
+
             @Override
-            public void onSuccess(@NonNull List<User> userList) {
+            public void onSuccess(@NonNull List<User> userList, @Nonnull String currentUser) {
+                loginUser = currentUser;
                 initializingUserList(userList);
             }
 
@@ -60,12 +52,6 @@ public class ViewUsersActivity extends AppCompatActivity implements UserView {
             }
         });
         backButtonClicked();
-        findLoginUser();
-        userPresenter = new UserPresenterImpl(this);
-    }
-
-    private void findLoginUser() {
-        loginUser = RealmLo.INSTANCE.getRealmLogin().findLoginUser();
     }
 
     private void backButtonClicked() {
@@ -83,7 +69,7 @@ public class ViewUsersActivity extends AppCompatActivity implements UserView {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
                 User selectedUser = users.get(position);
-                if (loginUser.getUsername().equalsIgnoreCase("admin") || selectedUser.getUsername().equalsIgnoreCase(loginUser.getUsername())) {
+                if (loginUser.equalsIgnoreCase("admin") || selectedUser.getUsername().equalsIgnoreCase(loginUser)) {
                     Intent intent = new Intent(ViewUsersActivity.this, ProfileActivity.class)
                             .putExtra("object", selectedUser);
                     startActivity(intent);
