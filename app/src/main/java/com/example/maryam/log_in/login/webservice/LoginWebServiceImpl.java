@@ -33,11 +33,12 @@ public class LoginWebServiceImpl implements LoginWebService{
                     if (onValidateUserListener != null){
                         onValidateUserListener.onError();
                     }
-                }
-                if (onValidateUserListener != null){
-                    LoginUser loginUser = new LoginUser();
-                    loginUser.setUsername(response.body().getUsername());
-                    onValidateUserListener.onSuccess(loginUser);
+                } else {
+                    if (onValidateUserListener != null) {
+                        LoginUser loginUser = new LoginUser();
+                        loginUser.setUsername(response.body().getUsername());
+                        onValidateUserListener.onSuccess(loginUser);
+                    }
                 }
             }
 

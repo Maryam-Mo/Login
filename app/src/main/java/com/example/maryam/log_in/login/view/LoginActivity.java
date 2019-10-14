@@ -77,7 +77,9 @@ public class LoginActivity extends AppCompatActivity implements LoginView {
 
     @Override
     public void showOnNotSuccessfulLogin(String message) {
-        Toast.makeText(LoginActivity.this, message, Toast.LENGTH_LONG).show();
+        Toast.makeText(LoginActivity.this, message, Toast.LENGTH_SHORT).show();
+        username.setText("");
+        password.setText("");
     }
 
     @Override
