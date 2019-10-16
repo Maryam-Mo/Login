@@ -1,4 +1,4 @@
-package com.example.maryam.log_in.login.presenter;
+package com.example.maryam.log_in.login.view.presenter;
 
 /**
  * Created by maryam on 9/25/19.

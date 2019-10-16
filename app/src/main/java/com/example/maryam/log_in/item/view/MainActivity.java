@@ -7,6 +7,8 @@ import android.view.View;
 import android.widget.Button;
 
 import com.example.maryam.log_in.R;
+import com.example.maryam.log_in.item.view.itemmain.ItemMainActivity;
+import com.example.maryam.log_in.user.view.ViewUserRecycler;
 import com.example.maryam.log_in.user.view.ViewUsersActivity;
 
 public class MainActivity extends AppCompatActivity {
@@ -42,7 +44,7 @@ public class MainActivity extends AppCompatActivity {
         user.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(MainActivity.this, ViewUsersActivity.class);
+                Intent intent = new Intent(MainActivity.this, ViewUserRecycler.class);
                 startActivity(intent);
             }
         });

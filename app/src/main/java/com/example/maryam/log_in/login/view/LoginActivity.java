@@ -11,8 +11,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 import com.example.maryam.log_in.R;
 import com.example.maryam.log_in.item.view.MainActivity;
-import com.example.maryam.log_in.login.presenter.LoginPresenter;
-import com.example.maryam.log_in.login.presenter.LoginPresenterImpl;
+import com.example.maryam.log_in.login.view.presenter.LoginPresenter;
+import com.example.maryam.log_in.login.view.presenter.LoginPresenterImpl;
 import com.example.maryam.log_in.user.view.ProfileActivity;
 
 public class LoginActivity extends AppCompatActivity implements LoginView {

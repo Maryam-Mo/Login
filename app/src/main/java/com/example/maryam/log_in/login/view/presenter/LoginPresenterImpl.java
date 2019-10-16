@@ -1,10 +1,9 @@
-package com.example.maryam.log_in.login.presenter;
+package com.example.maryam.log_in.login.view.presenter;
 
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
-import com.example.maryam.log_in.login.model.LoginModel;
-import com.example.maryam.log_in.login.model.LoginModelImpl;
+import com.example.maryam.log_in.ModelFactory;
 import com.example.maryam.log_in.login.model.OnSuccessfulLoginListener;
 import com.example.maryam.log_in.login.view.LoginView;
 
@@ -13,12 +12,10 @@ import com.example.maryam.log_in.login.view.LoginView;
  */
 
 public class LoginPresenterImpl implements LoginPresenter {
-    private LoginModel loginModel;
     private LoginView loginView;
 
     public LoginPresenterImpl(LoginView loginView) {
         this.loginView = loginView;
-        loginModel = new LoginModelImpl();
     }
 
     public LoginPresenterImpl(){}
@@ -35,7 +32,7 @@ public class LoginPresenterImpl implements LoginPresenter {
                 loginView.showErrorOnPassword(password);
             }
         } else {
-            loginModel.login(username, password, new OnSuccessfulLoginListener() {
+            ModelFactory.getLoginModel().login(username, password, new OnSuccessfulLoginListener() {
                 @Override
                 public void clearFields() {
                     clearField();

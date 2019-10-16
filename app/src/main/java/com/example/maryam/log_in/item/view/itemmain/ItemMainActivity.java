@@ -1,4 +1,4 @@
-package com.example.maryam.log_in.item.view;
+package com.example.maryam.log_in.item.view.itemmain;
 
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
@@ -7,6 +7,8 @@ import android.view.View;
 import android.widget.Button;
 
 import com.example.maryam.log_in.R;
+import com.example.maryam.log_in.item.view.ItemProfileActivity;
+import com.example.maryam.log_in.item.view.ViewItemsActivity;
 
 public class ItemMainActivity extends AppCompatActivity {
     private Button create;

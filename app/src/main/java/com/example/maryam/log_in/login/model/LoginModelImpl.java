@@ -3,8 +3,6 @@ package com.example.maryam.log_in.login.model;
 import android.support.annotation.NonNull;
 
 import com.example.maryam.log_in.dto.LoginUser;
-import com.example.maryam.log_in.dto.User;
-import com.example.maryam.log_in.login.presenter.LoginPresenter;
 import com.example.maryam.log_in.login.realm.RealmLo;
 import com.example.maryam.log_in.login.webservice.OnValidateUserListener;
 import com.example.maryam.log_in.login.webservice.RetrofitLogin;
@@ -13,7 +11,10 @@ import com.example.maryam.log_in.login.webservice.RetrofitLogin;
  * Created by maryam on 9/25/19.
  */
 
-public class LoginModelImpl implements LoginModel {
+public enum  LoginModelImpl implements LoginModel {
+
+
+    INSTANCE;
 
     @Override
     public void login(String username, String password, final OnSuccessfulLoginListener onSuccessfulLoginListener) {

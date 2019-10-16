@@ -64,10 +64,10 @@
         <activity
             android:name=".item.view.ViewItemsActivity"
             android:label="View Items"
-            android:parentActivityName=".item.view.ItemMainActivity">
+            android:parentActivityName=".item.view.itemmain.ItemMainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".item.view.ItemMainActivity" />
+                android:value=".item.view.itemmain.ItemMainActivity" />
             <intent-filter>
                 <action android:name="com.example.maryam.log_in.ViewItemsActivity" />
 
@@ -76,7 +76,7 @@
         </activity>
         <activity android:name=".item.view.ListviewItemRowActivity" />
         <activity
-            android:name=".item.view.ItemMainActivity"
+            android:name=".item.view.itemmain.ItemMainActivity"
             android:label="Item"
             android:parentActivityName=".item.view.MainActivity">
             <meta-data
@@ -96,6 +96,18 @@
                 android:value=".user.view.ViewUsersActivity" />
             <intent-filter>
                 <action android:name="com.example.maryam.log_in.ItemProfileActivity" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".user.view.ViewUserRecycler"
+            android:label="View Users"
+            android:parentActivityName=".user.view.ViewUsersActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".user.view.ViewUsersActivity" />
+            <intent-filter>
+                <action android:name="com.example.maryam.log_in.ViewUserRecycler" />
 
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
